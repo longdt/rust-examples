@@ -23,13 +23,21 @@ fn main() {
     println!("{number:>06}", number = 1);
 
     //Rust check correct number of argument are used.
-    println!("My name is {0}, {1} {0}", "Bond");
+    // println!("My name is {0}, {1} {0}", "Bond");
     //FIXME ^ Add missing argument
 
     #[allow(dead_code)]
     struct AStructure;
 
     //Custom type need implement Display trait
-    println!("This struct `{}` won't print...", AStructure);
+    // println!("This struct `{}` won't print...", AStructure);
     //FIXME ^ impl Display for AStructure
+
+    //println pi in format 3.14
+    let pi = 3.141592;
+    println!("PI = `{:10.2}`", pi);
+    println!("Hello `{:10}`", "x");
+
+    //can't use $ in first part of {part1:part2}
+    // println!("{number_idx$:width$}", number_idx=0, width=10);
 }
