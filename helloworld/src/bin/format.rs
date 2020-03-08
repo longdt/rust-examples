@@ -3,8 +3,8 @@ use std::fmt::{Display, Formatter, Result};
 fn main() {
     for city in [City {
         name: "Dublin",
-        lat: 53.347778,
-        lon: -6.259722
+        lat: 53.347_78,
+        lon: -6.259_722
     }, City {
         name: "Oslo",
         lat: 59.95,
