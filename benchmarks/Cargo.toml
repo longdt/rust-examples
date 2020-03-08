@@ -1,0 +1,16 @@
+[package]
+name = "benchmarks"
+version = "0.1.0"
+authors = ["Long Dinh <tronglongcntt@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[dev-dependencies]
+criterion = "0.3.1"
+
+[[bench]]
+name = "to_string"
+harness = false
