@@ -34,7 +34,8 @@ fn main() {
     //FIXME ^ impl Display for AStructure
 
     //println pi in format 3.14
-    let pi = 3.141592;
+    #[allow(clippy::approx_constant)]
+    let pi = 3.141_592;
     println!("PI = `{:10.2}`", pi);
     println!("Hello `{:10}`", "x");
 
