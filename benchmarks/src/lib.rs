@@ -1,7 +1,7 @@
 fn i32_string_size(mut x: i32) -> usize {
     let mut d = 1;
     if x >= 0 {
-        d = 0;, 5
+        d = 0;
         x = -x;
     }
     let mut p = -10;
