@@ -1,14 +1,11 @@
-use std::fmt::{Display, Formatter, Debug};
 use std::fmt::Result;
+use std::fmt::{Debug, Display, Formatter};
 
 fn main() {
     let iw = IntWrapper(10);
     println!("{}", iw);
 
-    let point = Point2D {
-        x: 3.3,
-        y: 7.2
-    };
+    let point = Point2D { x: 3.3, y: 7.2 };
 
     println!("Compare points:");
     println!("Display: {}", point);
@@ -28,7 +25,7 @@ impl Display for IntWrapper {
 
 struct Point2D {
     x: f64,
-    y: f64
+    y: f64,
 }
 
 impl Display for Point2D {

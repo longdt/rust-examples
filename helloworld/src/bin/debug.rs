@@ -2,8 +2,6 @@ fn main() {
     //Error: `UnPrintable` doesn't implement `std::fmt::Debug`
     // println!("{:?}", UnPrintable(1));
     println!("{0:?} and pretty print: {0:#?}", DebugPrintable(2));
-
-
 }
 
 //this structure can't be printed with fmt::Display or fmt::Debug
