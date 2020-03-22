@@ -3,4 +3,5 @@ members = [
     "helloworld",
     "benchmarks",
     "primitives",
+    "custom_types"
 ]

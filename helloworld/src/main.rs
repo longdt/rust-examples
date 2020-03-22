@@ -1,3 +1,4 @@
+#[allow(clippy::print_literal)]
 fn main() {
     //default 31 becomes an i32
     println!("{} days", 31);
