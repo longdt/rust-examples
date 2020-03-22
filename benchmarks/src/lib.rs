@@ -9,7 +9,7 @@ fn i32_string_size(mut x: i32) -> usize {
         if x > p {
             return i + d;
         }
-        p = 10 * p;
+        p *= 10;
     }
     10 + d
 }

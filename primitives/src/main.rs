@@ -12,7 +12,7 @@ fn main() {
 
     //A type can also be inferred from context
     let mut inferred_type = 12; // Type i64 is inferred from below line
-    inferred_type = 123123345345345i64;
+    inferred_type = 123_123_345_345_345_i64;
 
     // A mutable variable's value can be changed.
     let mut mutable = 12;
