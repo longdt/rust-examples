@@ -3,5 +3,6 @@ members = [
     "helloworld",
     "benchmarks",
     "primitives",
-    "custom_types"
+    "custom_types",
+    "variable_bindings"
 ]
