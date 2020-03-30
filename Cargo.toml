@@ -4,5 +4,6 @@ members = [
     "benchmarks",
     "primitives",
     "custom_types",
-    "variable_bindings"
+    "variable_bindings",
+    "types"
 ]
