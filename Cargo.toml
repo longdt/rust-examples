@@ -7,5 +7,6 @@ members = [
     "variable_bindings",
     "types",
     "conversion",
-    "expressions"
+    "expressions",
+    "flow_control"
 ]
