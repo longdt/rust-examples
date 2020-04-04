@@ -1,9 +1,4 @@
-#![allow(
-    unreachable_code,
-    unused_labels,
-    clippy::never_loop,
-    clippy::unused_label
-)]
+#![allow(unreachable_code, unused_labels, clippy::never_loop)]
 fn main() {
     'outer: loop {
         println!("Entered the outer loop");

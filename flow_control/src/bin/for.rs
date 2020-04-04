@@ -25,15 +25,27 @@ fn main() {
     }
 
     //for in with iterators
-    let vec = vec![&1, &2, &3];
-    println!("{:?}", vec);
-    let vec = vec!["Bob", "Frank", "Ferris"];
-    for name in vec.iter() {
+    let mut vec = vec!["Bob", "Frank", "Ferris"];
+    for &name in vec.iter() {
         match name {
-            &"Ferris" => println!("There is a rustacean among us!"),
+            "Ferris" => println!("There is a rustacean among us!"),
             _ => println!("Hello {}", name),
         }
     }
 
-    
+    for name in vec.iter_mut() {
+        *name = match *name {
+            "Ferris" => "There is a rustacean among us!",
+            "Frank" => "Frank",
+            _ => "Hello",
+        }
+    }
+    println!("names: {:?}", vec);
+
+    for name in vec.into_iter() {
+        match name {
+            "Frank" => println!("Frank is a rustacean"),
+            _ => println!("Hello {}", name),
+        }
+    }
 }
