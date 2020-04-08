@@ -8,5 +8,6 @@ members = [
     "types",
     "conversion",
     "expressions",
-    "flow_control"
+    "flow_control",
+    "functions"
 ]
