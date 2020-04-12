@@ -42,7 +42,6 @@ fn main() {
     //without an error
     let _count_reborrowed = &mut count;
 
-
     //a non-copy type.
     let movable = Box::new(3);
 
@@ -62,8 +61,8 @@ fn main() {
     //`Vec` has non-copy semantics.
     let haystack = vec![1, 2, 3];
 
-    //`move` keyword move environment variable to closure's memory. In this case contains still
-    //implements Fn trait
+    //`move` keyword move variables from the enclosing scope to closure's memory. In this case
+    // `contains` still implements Fn trait
     let contains = move |needle| haystack.contains(needle);
 
     println!("{}", contains(&1));
