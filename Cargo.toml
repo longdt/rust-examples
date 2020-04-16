@@ -9,5 +9,6 @@ members = [
     "conversion",
     "expressions",
     "flow_control",
-    "functions"
+    "functions",
+    "modules"
 ]
