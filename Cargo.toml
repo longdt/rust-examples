@@ -11,5 +11,6 @@ members = [
     "flow_control",
     "functions",
     "modules",
-    "crates"
+    "crates",
+    "attributes"
 ]
