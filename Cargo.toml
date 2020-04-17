@@ -10,5 +10,6 @@ members = [
     "expressions",
     "flow_control",
     "functions",
-    "modules"
+    "modules",
+    "crates"
 ]
