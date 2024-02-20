@@ -13,5 +13,6 @@ members = [
     "functions",
     "modules",
     "crates",
-    "attributes"
-]
+    "attributes",
+    "tcpserver",
+    "tcpclient"]
