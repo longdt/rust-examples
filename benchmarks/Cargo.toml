@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
-criterion = "0.3.1"
+criterion = "0.5.1"
 
 [[bench]]
 name = "to_string"
