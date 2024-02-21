@@ -15,4 +15,5 @@ members = [
     "crates",
     "attributes",
     "tcpserver",
-    "tcpclient"]
+    "tcpclient",
+    "http"]
