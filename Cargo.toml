@@ -16,4 +16,5 @@ members = [
     "attributes",
     "tcpserver",
     "tcpclient",
-    "http"]
+    "http",
+    "httpserver"]
