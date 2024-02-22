@@ -17,4 +17,4 @@ members = [
     "tcpserver",
     "tcpclient",
     "http",
-    "httpserver"]
+    "httpserver", "tutor-nodb", "scoping_rules"]
