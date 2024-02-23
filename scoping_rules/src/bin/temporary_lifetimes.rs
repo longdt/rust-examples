@@ -1,6 +1,16 @@
 #[derive(Debug)]
 struct MyString(String);
 
+trait ToMyString {
+    fn to_my_string(&self) -> MyString;
+}
+
+impl ToMyString for usize {
+    fn to_my_string(&self) -> MyString {
+        MyString(format!("ToMyString: {}", *self))
+    }
+}
+
 impl From<&str> for MyString {
     fn from(value: &str) -> Self {
         Self(String::from(value))
@@ -53,8 +63,8 @@ fn main() {
     //error[E0716]: temporary value dropped while borrowed
     //temporary value G is freed at the end of this statement. But borrow later used here
     println!("----- case G ----");
-    let g = fn_return_ref(&MyString::from("temporary G"));
-    println!("case G: array lenth = {} and first char = {}", g.len(), g[0]);
+    // let g = fn_return_ref(&MyString::from("temporary G"));
+    // println!("case G: array lenth = {} and first char = {}", g.len(), g[0]);
 
     //same as case E: temporary value is freed at the end of this statement
     println!("----- case H ----");
@@ -66,6 +76,8 @@ fn main() {
     //regardless of the signature of f, the String is kept alive until the end of the statement, until after g is called.
     println!("----- case I ----");
     MyString::from(fn_return_usize(&MyString::from("temporary I")));
+    println!("----- case J ----");
+    fn_return_usize(&MyString::from("temporary J")).to_my_string();
     println!("Hello world!");
 }
 
