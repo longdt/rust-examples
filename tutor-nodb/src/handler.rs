@@ -25,7 +25,7 @@ pub async fn create_course(app_state: web::types::State<Arc<AppState>>,
     println!("Received new course");
     let course_count_for_user = app_state.courses.lock().unwrap()
         .iter()
-        .filter(|course| course.tutor_id == create_course_request.tutor_id)
+        .filter(|&course| course.tutor_id == create_course_request.tutor_id)
         .count();
     let new_course = Course {
         tutor_id: create_course_request.tutor_id,
@@ -48,6 +48,23 @@ pub async fn get_tutor_courses(app_state: web::types::State<Arc<AppState>>,
         .map(CourseResponse::from)
         .collect::<Vec<CourseResponse>>();
     HttpResponse::Ok().json(&tutor_courses)
+}
+
+pub async fn get_course(app_state: web::types::State<Arc<AppState>>,
+        params: web::types::Path<(i64, i64)>) -> HttpResponse {
+    let (tutor_id, course_id) = params.into_inner();
+    let found_course = app_state.courses
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|&course| course.tutor_id == tutor_id && course.course_id == Some(course_id))
+        .map(CourseResponse::from)
+        .next();
+    if let Some(ref c) = found_course {
+        HttpResponse::Ok().json(c)
+    } else {
+        HttpResponse::Ok().json(&"Course not found")
+    }
 }
 
 #[cfg(test)]
@@ -114,6 +131,38 @@ mod tests {
         ).await;
         let req = test::TestRequest::get()
             .uri("/courses/1")
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(StatusCode::OK, resp.status());
+        resp.response().body();
+    }
+
+    #[ntex::test]
+    async fn test_get_course() {
+        let app_state = Arc::new(AppState {
+            health_check_response: String::from("Health check Success"),
+            visit_count: Mutex::new(0),
+            courses: Mutex::new(vec![
+                Course {
+                    tutor_id: 1,
+                    course_id: Some(1),
+                    course_name: String::from("Hello Rust"),
+                    created_at: Some(OffsetDateTime::now_utc()),
+                },
+                Course {
+                    tutor_id: 2,
+                    course_id: Some(1),
+                    course_name: String::from("Hello Java"),
+                    created_at: Some(OffsetDateTime::now_utc()),
+                },
+            ]),
+        });
+        let app = test::init_service(App::new()
+            .state(app_state)
+            .route("/courses/{tutor_id}/{course_id}", web::get().to(get_course))
+        ).await;
+        let req = test::TestRequest::get()
+            .uri("/courses/2/1")
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert_eq!(StatusCode::OK, resp.status());
