@@ -14,7 +14,10 @@ members = [
     "modules",
     "crates",
     "attributes",
+    "scoping_rules",
     "tcpserver",
     "tcpclient",
     "http",
-    "httpserver", "tutor-nodb", "scoping_rules"]
+    "httpserver",
+    "tutor_nodb",
+    "tutor_db"]
