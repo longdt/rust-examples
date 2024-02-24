@@ -1,4 +1,5 @@
-use crate::model::CreateCourseRequest;
+use crate::dbaccess;
+use crate::model::{CourseResponse, CreateCourseRequest};
 use crate::state::AppState;
 use ntex::web;
 use ntex::web::HttpResponse;
@@ -21,7 +22,8 @@ pub async fn create_course(
     app_state: web::types::State<Arc<AppState>>,
     create_course_request: web::types::Json<CreateCourseRequest>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json(&"Success")
+    let course = dbaccess::create_course(&app_state.db, &create_course_request).await;
+    HttpResponse::Ok().json(&CourseResponse::from(course))
 }
 
 #[web::get("/courses/{tutor_id}")]
@@ -29,7 +31,13 @@ pub async fn get_tutor_courses(
     app_state: web::types::State<Arc<AppState>>,
     params: web::types::Path<i64>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json(&"Success")
+    let tutor_id = params.into_inner();
+    let courses = dbaccess::get_tutor_courses(&app_state.db, tutor_id).await;
+    let response = courses
+        .into_iter()
+        .map(CourseResponse::from)
+        .collect::<Vec<CourseResponse>>();
+    HttpResponse::Ok().json(&response)
 }
 
 #[web::get("/courses/{tutor_id}/{course_id}")]
@@ -37,7 +45,9 @@ pub async fn get_course(
     app_state: web::types::State<Arc<AppState>>,
     params: web::types::Path<(i64, i64)>,
 ) -> HttpResponse {
-    HttpResponse::Ok().json(&"Success")
+    let (tutor_id, course_id) = params.into_inner();
+    let course = dbaccess::get_course(&app_state.db, tutor_id, course_id).await;
+    HttpResponse::Ok().json(&CourseResponse::from(course))
 }
 
 #[cfg(test)]
@@ -45,9 +55,7 @@ mod tests {
     use super::*;
     use dotenvy::dotenv;
     use ntex::http::{Request, StatusCode};
-    use ntex::web::{
-        test, App, DefaultError, Error, WebResponse, WebServiceFactory,
-    };
+    use ntex::web::{test, App, DefaultError, Error, WebResponse, WebServiceFactory};
     use ntex::{Pipeline, Service};
     use sqlx::postgres::PgPoolOptions;
     use std::env;
@@ -96,12 +104,14 @@ mod tests {
         let req = test::TestRequest::post()
             .uri("/courses")
             .header("Content-Type", "application/json")
-            .set_payload(r#"
+            .set_payload(
+                r#"
              {
                 "tutor_id": 1,
                 "course_name": "This is the next course"
              }
-            "#)
+            "#,
+            )
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert_eq!(StatusCode::OK, resp.status());

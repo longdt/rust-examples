@@ -10,6 +10,7 @@ mod handler;
 mod model;
 mod route;
 mod state;
+mod dbaccess;
 
 #[ntex::main]
 async fn main() -> io::Result<()> {

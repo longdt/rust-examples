@@ -9,7 +9,7 @@ pub struct Course {
     pub course_id: i64,
     pub tutor_id: i64,
     pub course_name: String,
-    pub created_at: Option<OffsetDateTime>,
+    pub created_at: OffsetDateTime,
 }
 
 #[ntex::main]
