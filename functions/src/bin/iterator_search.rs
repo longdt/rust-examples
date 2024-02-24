@@ -19,11 +19,14 @@ fn main() {
     let array2 = [4, 5, 6];
 
     //`iter()` for arrays yields `&i32`
-    println!("Find 2 in array1: {:?}", array1.iter().find(|&&x| x == 2));
-    //`into_iter()` for arrays unusually yields `&i32`. warning here #[warn(array_into_iter)]
+    println!("Find 2 in array1: {:?}", array1.iter()
+        .find(|&&x| x == 2));
+    //In old version `into_iter()` for arrays unusually yields `&i32`. warning here #[warn(array_into_iter)]
+    //But now into_inter() yields `i32`
     println!(
         "Find 2 in array2: {:?}",
-        array2.into_iter().find(|&&x| x == 2)
+        array2.into_iter()
+            .find(|&x| x == 2)
     );
 
     let vec = vec![1, 9, 3, 3, 13, 2];
