@@ -24,7 +24,11 @@ impl<'a> Default for HttpResponse<'a> {
 }
 
 impl<'a> HttpResponse<'a> {
-    pub fn new(status_code: &'a str, headers: Option<HashMap<&'a str, &'a str>>, body: Option<String>) -> HttpResponse<'a> {
+    pub fn new(
+        status_code: &'a str,
+        headers: Option<HashMap<&'a str, &'a str>>,
+        body: Option<String>,
+    ) -> HttpResponse<'a> {
         let mut response: HttpResponse<'a> = HttpResponse::default();
         if status_code != "200" {
             response.status_code = status_code.into();
@@ -72,22 +76,22 @@ impl<'a> HttpResponse<'a> {
                     header_string = format!("{}{}:{}\r\n", header_string, k, v);
                 }
                 header_string
-            },
-            None => String::new()
+            }
+            None => String::new(),
         }
     }
 
     pub fn body(&self) -> &str {
         match &self.body {
             Some(b) => b.as_str(),
-            None => ""
+            None => "",
         }
     }
 
     pub fn content_length(&self) -> usize {
         match &self.body {
             Some(b) => b.len(),
-            None => 0
+            None => 0,
         }
     }
 }
@@ -101,13 +105,14 @@ impl<'a> From<HttpResponse<'a>> for String {
 
 impl<'a> From<&HttpResponse<'a>> for String {
     fn from(res: &HttpResponse<'a>) -> Self {
-        format!("{} {} {}\r\n{}Content-Length: {}\r\n\r\n{}",
-                res.version(),
-                res.status_code(),
-                res.status_text(),
-                res.headers(),
-                res.content_length(),
-                res.body()
+        format!(
+            "{} {} {}\r\n{}Content-Length: {}\r\n\r\n{}",
+            res.version(),
+            res.status_code(),
+            res.status_text(),
+            res.headers(),
+            res.content_length(),
+            res.body()
         )
     }
 }
@@ -133,7 +138,7 @@ mod tests {
         let actual_response = HttpResponse::new(
             "200",
             None,
-            Some("Item was shipped on 21st Dec 2020".into())
+            Some("Item was shipped on 21st Dec 2020".into()),
         );
         let expected_response = HttpResponse {
             version: "HTTP/1.1",
@@ -144,7 +149,7 @@ mod tests {
                 h.insert("Content-Type", "text/html");
                 Some(h)
             },
-            body: Some("Item was shipped on 21st Dec 2020".into())
+            body: Some("Item was shipped on 21st Dec 2020".into()),
         };
         assert_eq!(expected_response, actual_response);
     }
@@ -154,7 +159,7 @@ mod tests {
         let actual_response = HttpResponse::new(
             "404",
             None,
-            Some("Item was shipped on 21st Dec 2020".into())
+            Some("Item was shipped on 21st Dec 2020".into()),
         );
         let expected_response = HttpResponse {
             version: "HTTP/1.1",
@@ -165,7 +170,7 @@ mod tests {
                 h.insert("Content-Type", "text/html");
                 Some(h)
             },
-            body: Some("Item was shipped on 21st Dec 2020".into())
+            body: Some("Item was shipped on 21st Dec 2020".into()),
         };
         assert_eq!(expected_response, actual_response);
     }
@@ -181,7 +186,7 @@ mod tests {
                 h.insert("Content-Type", " text/html");
                 Some(h)
             },
-            body: Some("Item was shipped on 21st Dec 2020".into())
+            body: Some("Item was shipped on 21st Dec 2020".into()),
         };
         let actual_resp_string: String = response.into();
         let expected_resp_string = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: 33\r\n\r\nItem was shipped on 21st Dec 2020";

@@ -1,7 +1,7 @@
+use crate::router::Router;
+use http::httprequest::HttpRequest;
 use std::io::Read;
 use std::net::TcpListener;
-use http::httprequest::HttpRequest;
-use crate::router::Router;
 
 pub struct Server<'a> {
     socket_addr: &'a str,
@@ -9,9 +9,7 @@ pub struct Server<'a> {
 
 impl<'a> Server<'a> {
     pub fn new(socket_addr: &'a str) -> Self {
-        Self {
-            socket_addr
-        }
+        Self { socket_addr }
     }
 
     pub fn run(&self) {

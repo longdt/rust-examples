@@ -1,12 +1,12 @@
-use time::OffsetDateTime;
 use ntex::web::types::Json;
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 pub struct Course {
     pub tutor_id: i64,
     pub course_id: Option<i64>,
     pub course_name: String,
-    pub created_at: Option<OffsetDateTime>
+    pub created_at: Option<OffsetDateTime>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -41,7 +41,7 @@ impl From<Course> for CourseResponse {
             tutor_id: value.tutor_id,
             course_id: value.course_id.unwrap(),
             course_name: value.course_name,
-            created_at: value.created_at.unwrap()
+            created_at: value.created_at.unwrap(),
         }
     }
 }
@@ -52,7 +52,7 @@ impl From<&Course> for CourseResponse {
             tutor_id: value.tutor_id,
             course_id: value.course_id.unwrap(),
             course_name: value.course_name.clone(),
-            created_at: value.created_at.unwrap()
+            created_at: value.created_at.unwrap(),
         }
     }
 }

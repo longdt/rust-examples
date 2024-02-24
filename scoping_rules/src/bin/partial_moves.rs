@@ -12,7 +12,11 @@ fn main() {
     };
 
     //`name` is moved out of person, but `age` is referenced
-    let Person { name, ref age, tall} = person;
+    let Person {
+        name,
+        ref age,
+        tall,
+    } = person;
     println!("The person's age is {}", age);
     println!("The person's name is {}", name);
     println!("The person's tall is {}", tall);
@@ -34,7 +38,7 @@ fn main() {
     };
 
     //`name` is moved out of person, but `age` is referenced
-    let Student { id, class} = student;
+    let Student { id, class } = student;
     println!("The student's id is {}", id);
     println!("The student's class is {}", class);
 

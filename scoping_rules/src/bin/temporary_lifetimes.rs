@@ -51,7 +51,6 @@ fn main() {
     println!("----- case D ----");
     fn_return_void(&MyString::from("temporary D"));
 
-
     //In a let statement
     println!("----- case E ----"); //temporary value is freed at the end of this statement
     let e = fn_return_usize(&MyString::from("temporary E"));

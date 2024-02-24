@@ -1,7 +1,7 @@
-mod state;
-mod route;
-mod model;
 mod handler;
+mod model;
+mod route;
+mod state;
 
 fn main() {
     println!("Hello, world!");

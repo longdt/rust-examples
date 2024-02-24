@@ -1,5 +1,5 @@
-use std::sync::Mutex;
 use crate::model::Course;
+use std::sync::Mutex;
 
 pub struct AppState {
     pub health_check_response: String,

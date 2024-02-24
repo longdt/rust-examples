@@ -1,6 +1,6 @@
-use std::io::Write;
-use http::httprequest::{HttpRequest, Method, Resource};
 use crate::handler::{Handler, PageNotFoundHandler, StaticPageHandler, WebServiceHandler};
+use http::httprequest::{HttpRequest, Method, Resource};
+use std::io::Write;
 
 pub struct Router;
 
@@ -21,7 +21,7 @@ impl Router {
                         }
                     }
                 }
-            }
+            },
             _ => {
                 let resp = PageNotFoundHandler::handle(&req);
                 let _ = resp.send_response(stream);

@@ -4,7 +4,7 @@ fn main() {
     println!("Address of constant: &'hello' = {:p}", &"hello");
     let a = 1;
     let b = 2;
-    let c =  "hello";
+    let c = "hello";
     println!("Address of constant: &a = {:p}", &a);
     println!("Address of constant: &b = {:p}", &b);
     println!("Address of constant: &c = {:p}", &c);

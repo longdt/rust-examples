@@ -1,6 +1,6 @@
-use std::io;
 use ntex::web;
 use ntex::web::{App, HttpResponse, HttpServer, Responder};
+use std::io;
 
 pub fn general_routes(cfg: &mut web::ServiceConfig) {
     cfg.route("/health", web::get().to(health_check_handler));

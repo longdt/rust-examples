@@ -1,6 +1,6 @@
-use std::{env, fs};
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::{env, fs};
 
 use http::httprequest::HttpRequest;
 use http::httpresponse::HttpResponse;
@@ -50,9 +50,9 @@ impl Handler for StaticPageHandler {
                         headers.insert("Content-Type", "text/html");
                     }
                     HttpResponse::new("200", Some(headers), Some(content))
-                },
-                None => PageNotFoundHandler::handle(req)
-            }
+                }
+                None => PageNotFoundHandler::handle(req),
+            },
         }
     }
 }
@@ -81,7 +81,7 @@ impl Handler for WebServiceHandler {
                 headers.insert("Content-Type", "application/json");
                 HttpResponse::new("200", Some(headers), body)
             }
-            _ => PageNotFoundHandler::handle(req)
+            _ => PageNotFoundHandler::handle(req),
         }
     }
 }
