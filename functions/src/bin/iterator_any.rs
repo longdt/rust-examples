@@ -13,6 +13,7 @@ fn main() {
 
     //`iter()` for arrays yields `&i32`.
     println!("2 in array1: {}", array1.iter().any(|&x| x == 2));
-    //`into_iter()` for arrays unusually yields `&i32`.
-    println!("2 in array2: {}", array2.into_iter().any(|&x| x == 2));
+    //In old rust version `into_iter()` for arrays unusually yields `&i32`.
+    //But now it's not true
+    println!("2 in array2: {}", array2.into_iter().any(|x| x == 2));
 }
