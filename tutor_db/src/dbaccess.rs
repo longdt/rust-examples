@@ -43,13 +43,16 @@ pub async fn get_course(
     tutor_id: i64,
     course_id: i64,
 ) -> Result<Course, EzyTutorError> {
-    sqlx::query_as!(
+    let course_opt = sqlx::query_as!(
         Course,
         "select * from course where tutor_id = $1 and course_id = $2",
         tutor_id,
         course_id
     )
-    .fetch_one(pool)
-    .await
-    .map_err(EzyTutorError::from)
+    .fetch_optional(pool)
+    .await?;
+    match course_opt {
+        Some(c) => Ok(c),
+        None => Err(EzyTutorError::NotFound("Course id not found".into()))
+    }
 }

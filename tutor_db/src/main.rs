@@ -6,12 +6,12 @@ use sqlx::postgres::PgPoolOptions;
 use std::sync::{Arc, Mutex};
 use std::{env, io};
 
+mod dbaccess;
+mod error;
 mod handler;
 mod model;
 mod route;
 mod state;
-mod dbaccess;
-mod error;
 
 #[ntex::main]
 async fn main() -> io::Result<()> {
@@ -33,7 +33,7 @@ async fn main() -> io::Result<()> {
             .configure(general_routes)
             .configure(course_routes)
     })
-        .bind(("127.0.0.1", 3000))?
-        .run()
-        .await
+    .bind(("127.0.0.1", 3000))?
+    .run()
+    .await
 }
