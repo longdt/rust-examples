@@ -11,6 +11,7 @@ mod model;
 mod route;
 mod state;
 mod dbaccess;
+mod error;
 
 #[ntex::main]
 async fn main() -> io::Result<()> {

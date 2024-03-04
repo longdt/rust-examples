@@ -1,4 +1,5 @@
 use crate::dbaccess;
+use crate::error::EzyTutorError;
 use crate::model::{CourseResponse, CreateCourseRequest};
 use crate::state::AppState;
 use ntex::web;
@@ -21,33 +22,34 @@ pub async fn health_check(app_state: web::types::State<Arc<AppState>>) -> HttpRe
 pub async fn create_course(
     app_state: web::types::State<Arc<AppState>>,
     create_course_request: web::types::Json<CreateCourseRequest>,
-) -> HttpResponse {
-    let course = dbaccess::create_course(&app_state.db, &create_course_request).await;
-    HttpResponse::Ok().json(&CourseResponse::from(course))
+) -> Result<HttpResponse, EzyTutorError> {
+    dbaccess::create_course(&app_state.db, &create_course_request)
+        .await
+        .map(|course| HttpResponse::Ok().json(&CourseResponse::from(course)))
 }
 
 #[web::get("/courses/{tutor_id}")]
 pub async fn get_tutor_courses(
     app_state: web::types::State<Arc<AppState>>,
     params: web::types::Path<i64>,
-) -> HttpResponse {
+) -> Result<HttpResponse, EzyTutorError> {
     let tutor_id = params.into_inner();
-    let courses = dbaccess::get_tutor_courses(&app_state.db, tutor_id).await;
+    let courses = dbaccess::get_tutor_courses(&app_state.db, tutor_id).await?;
     let response = courses
         .into_iter()
         .map(CourseResponse::from)
         .collect::<Vec<CourseResponse>>();
-    HttpResponse::Ok().json(&response)
+    Ok(HttpResponse::Ok().json(&response))
 }
 
 #[web::get("/courses/{tutor_id}/{course_id}")]
 pub async fn get_course(
     app_state: web::types::State<Arc<AppState>>,
     params: web::types::Path<(i64, i64)>,
-) -> HttpResponse {
+) -> Result<HttpResponse, EzyTutorError> {
     let (tutor_id, course_id) = params.into_inner();
-    let course = dbaccess::get_course(&app_state.db, tutor_id, course_id).await;
-    HttpResponse::Ok().json(&CourseResponse::from(course))
+    let course = dbaccess::get_course(&app_state.db, tutor_id, course_id).await?;
+    Ok(HttpResponse::Ok().json(&CourseResponse::from(course)))
 }
 
 #[cfg(test)]
