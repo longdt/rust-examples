@@ -1,7 +1,7 @@
-use crate::error::EzyTutorError;
-use crate::model::{Course, CreateCourseRequest};
 use sqlx::PgPool;
 use time::OffsetDateTime;
+use crate::error::EzyTutorError;
+use crate::model::course::{Course, CreateCourseRequest};
 
 pub async fn create_course(
     pool: &PgPool,
@@ -49,8 +49,8 @@ pub async fn get_course(
         tutor_id,
         course_id
     )
-    .fetch_optional(pool)
-    .await?;
+        .fetch_optional(pool)
+        .await?;
     match course_opt {
         Some(c) => Ok(c),
         None => Err(EzyTutorError::NotFound("Course id not found".into()))

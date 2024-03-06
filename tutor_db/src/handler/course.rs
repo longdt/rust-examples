@@ -1,32 +1,17 @@
-use crate::dbaccess;
-use crate::error::EzyTutorError;
-use crate::model::{CourseResponse, CreateCourseRequest};
-use crate::state::AppState;
+use std::sync::Arc;
 use ntex::web;
 use ntex::web::HttpResponse;
-use std::sync::Arc;
-use tracing::{info, instrument};
-
-#[instrument]
-#[web::get("/health")]
-pub async fn health_check(app_state: web::types::State<Arc<AppState>>) -> HttpResponse {
-    let count;
-    {
-        let mut visit_count = app_state.visit_count.lock().unwrap();
-        count = *visit_count + 1;
-        *visit_count = count;
-    }
-    info!("increase visit count");
-    let response = format!("{} {} times", app_state.health_check_response, count);
-    HttpResponse::Ok().json(&response)
-}
+use crate::dbaccess;
+use crate::error::EzyTutorError;
+use crate::model::course::{CourseResponse, CreateCourseRequest};
+use crate::state::AppState;
 
 #[web::post("/courses")]
 pub async fn create_course(
     app_state: web::types::State<Arc<AppState>>,
     create_course_request: web::types::Json<CreateCourseRequest>,
 ) -> Result<HttpResponse, EzyTutorError> {
-    dbaccess::create_course(&app_state.db, &create_course_request)
+    dbaccess::course::create_course(&app_state.db, &create_course_request)
         .await
         .map(|course| HttpResponse::Ok().json(&CourseResponse::from(course)))
 }
@@ -37,7 +22,7 @@ pub async fn get_tutor_courses(
     params: web::types::Path<i64>,
 ) -> Result<HttpResponse, EzyTutorError> {
     let tutor_id = params.into_inner();
-    let courses = dbaccess::get_tutor_courses(&app_state.db, tutor_id).await?;
+    let courses = dbaccess::course::get_tutor_courses(&app_state.db, tutor_id).await?;
     let response = courses
         .into_iter()
         .map(CourseResponse::from)
@@ -51,26 +36,28 @@ pub async fn get_course(
     params: web::types::Path<(i64, i64)>,
 ) -> Result<HttpResponse, EzyTutorError> {
     let (tutor_id, course_id) = params.into_inner();
-    let course = dbaccess::get_course(&app_state.db, tutor_id, course_id).await?;
+    let course = dbaccess::course::get_course(&app_state.db, tutor_id, course_id).await?;
     Ok(HttpResponse::Ok().json(&CourseResponse::from(course)))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use dotenvy::dotenv;
-    use ntex::http::{Request, StatusCode};
-    use ntex::web::{test, App, DefaultError, Error, WebResponse, WebServiceFactory};
-    use ntex::{Pipeline, Service};
-    use sqlx::postgres::PgPoolOptions;
     use std::env;
     use std::sync::Mutex;
+
+    use dotenvy::dotenv;
+    use ntex::{Pipeline, Service};
+    use ntex::http::{Request, StatusCode};
+    use ntex::web::{App, DefaultError, Error, test, WebResponse, WebServiceFactory};
+    use sqlx::postgres::PgPoolOptions;
+
+    use super::*;
 
     async fn init_app<F>(
         factory: F,
     ) -> Pipeline<impl Service<Request, Response = WebResponse, Error = Error> + Sized>
-    where
-        F: WebServiceFactory<DefaultError> + 'static,
+        where
+            F: WebServiceFactory<DefaultError> + 'static,
     {
         dotenv().ok();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
