@@ -15,9 +15,10 @@ members = [
     "crates",
     "attributes",
     "scoping_rules",
+    "testing",
     "tcpserver",
     "tcpclient",
     "http",
     "httpserver",
     "tutor_nodb",
-    "tutor_db"]
+    "tutor_db",]
