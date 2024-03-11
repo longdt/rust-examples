@@ -12,3 +12,12 @@ create table course
     course_level varchar(30),
     created_at  timestamptz default CURRENT_TIMESTAMP not null
 );
+
+create table tutor
+(
+    tutor_id    bigserial primary key,
+    tutor_name varchar(200) not null,
+    tutor_pic_url varchar(2000) not null,
+    tutor_profile varchar(2000) not null,
+    created_at  timestamptz default CURRENT_TIMESTAMP not null
+);

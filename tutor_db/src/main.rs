@@ -7,7 +7,7 @@ use ntex::web::{App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use tracing_subscriber::util::SubscriberInitExt;
 
-use tutor_db::route::{course_routes, general_routes};
+use tutor_db::route::{course_routes, general_routes, tutor_routes};
 use tutor_db::state::AppState;
 
 #[ntex::main]
@@ -31,6 +31,7 @@ async fn main() -> io::Result<()> {
             .state(app_state.clone())
             .configure(general_routes)
             .configure(course_routes)
+            .configure(tutor_routes)
     })
     .bind(("127.0.0.1", 3000))?
     .run()
