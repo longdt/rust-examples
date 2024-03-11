@@ -72,7 +72,7 @@ pub async fn get_course(
     .ok_or_else(|| EzyTutorError::NotFound("Course id not found".into()))
 }
 
-pub(crate) async fn update_course(
+pub async fn update_course(
     pool: &PgPool,
     tutor_id: i64,
     course_id: i64,
@@ -110,5 +110,24 @@ pub(crate) async fn update_course(
             created_at: record.created_at,
         }),
         None => Err(EzyTutorError::NotFound("Course id not found".into())),
+    }
+}
+
+pub async fn delete_course(
+    pool: &PgPool,
+    tutor_id: i64,
+    course_id: i64,
+) -> Result<(), EzyTutorError> {
+    let result = sqlx::query!(
+        "delete from course where tutor_id = $1 and course_id = $2",
+        tutor_id,
+        course_id
+    )
+    .execute(pool)
+    .await?;
+    if result.rows_affected() == 1 {
+        Ok(())
+    } else {
+        Err(EzyTutorError::NotFound("Course id not found".to_owned()))
     }
 }
