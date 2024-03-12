@@ -1,6 +1,6 @@
 use ntex::web;
 
-use crate::handler::course::{create_course, get_course, get_tutor_courses, update_course};
+use crate::handler::course::{create_course, delete_course, get_course, get_tutor_courses, update_course};
 use crate::handler::general::health_check;
 use crate::handler::tutor::{create_tutor, get_tutor, get_tutors, update_tutor, delete_tutor};
 
@@ -12,7 +12,8 @@ pub fn course_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(create_course)
         .service(get_tutor_courses)
         .service(get_course)
-        .service(update_course);
+        .service(update_course)
+        .service(delete_course);
 }
 
 pub fn tutor_routes(cfg: &mut web::ServiceConfig) {

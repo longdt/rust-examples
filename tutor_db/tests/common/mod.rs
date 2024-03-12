@@ -30,6 +30,7 @@ pub async fn init_app<F>(
 }
 
 pub async fn new_pool() -> PgPool {
+    dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     PgPoolOptions::new()
         .max_connections(5)

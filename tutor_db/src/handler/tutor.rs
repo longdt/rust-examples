@@ -36,7 +36,7 @@ pub async fn get_tutor(
         .map(|tutor| HttpResponse::Ok().json(&TutorResponse::from(tutor)))
 }
 
-#[web::get("/tutors/{tutor_id}")]
+#[web::patch("/tutors/{tutor_id}")]
 pub async fn update_tutor(
     app_state: web::types::State<Arc<AppState>>,
     params: web::types::Path<i64>,
