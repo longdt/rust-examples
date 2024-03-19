@@ -15,6 +15,7 @@ members = [
     "crates",
     "cargo",
     "attributes",
+    "generics",
     "scoping_rules",
     "testing",
     "tcpserver",
