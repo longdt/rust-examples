@@ -19,6 +19,7 @@ members = [
     "scoping_rules",
     "traits",
     "macro_rules",
+    "error_handling",
     "testing",
     "tcpserver",
     "tcpclient",
@@ -26,4 +27,4 @@ members = [
     "httpserver",
     "tutor_nodb",
     "tutor_db",
-    "hello-async",]
+    "hello-async", ]
