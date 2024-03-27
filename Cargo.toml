@@ -21,6 +21,7 @@ members = [
     "macro_rules",
     "error_handling",
     "testing",
+    "unsafe_operations",
     "compatibility",
     "meta",
     "tcpserver",
@@ -29,4 +30,4 @@ members = [
     "httpserver",
     "tutor_nodb",
     "tutor_db",
-    "hello-async", ]
+    "hello-async",]
