@@ -21,6 +21,7 @@ members = [
     "macro_rules",
     "error_handling",
     "testing",
+    "meta",
     "tcpserver",
     "tcpclient",
     "http",
