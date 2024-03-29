@@ -21,6 +21,7 @@ members = [
     "macro_rules",
     "error_handling",
     "std_library_types",
+    "std_misc",
     "testing",
     "unsafe_operations",
     "compatibility",
@@ -31,4 +32,5 @@ members = [
     "httpserver",
     "tutor_nodb",
     "tutor_db",
-    "hello-async", ]
+    "hello-async",
+]
