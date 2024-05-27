@@ -7,9 +7,10 @@ fn main() {
 
     let num = Number(0);
     println!("is zero: {}", num.is_zero());
-
     //error! can't modify a `const`.
     // THRESHOLD = 5;
+    println!("ONE is : {:?}", ONE);
+    println!("FIRST_PERSON is : {:?}", FIRST_PERSON);
 }
 
 //Globals are declared outside all other scopes.
@@ -21,8 +22,9 @@ fn is_big(n: i32) -> bool {
     n > THRESHOLD
 }
 
+#[derive(Debug)]
 struct Number(i32);
-
+const ONE: Number = Number(1);
 impl Number {
     const ZERO: i32 = 0;
 
@@ -30,3 +32,15 @@ impl Number {
         self.0 == Number::ZERO
     }
 }
+
+#[derive(Debug)]
+struct Person<'a> {
+    name: &'a str,
+    // ages: Vec<i32>,
+}
+
+const FIRST_PERSON: Person<'static> = Person {
+    name: "Rust Pro",
+    // ages: vec![1, 3, 10],
+    // Error! ^ allocations are not allowed in constants
+};
