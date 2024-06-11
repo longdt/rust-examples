@@ -16,6 +16,10 @@ pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>
 }
 
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>
+}
+
 impl<T> List<T> {
     pub fn new() -> Self {
         Self { head: None }
@@ -53,6 +57,23 @@ impl<T> List<T> {
             // next: self.head.as_ref().map(|node| &**node),
             next: self.head.as_deref(), // prefer this way
         }
+    }
+    
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        IterMut {
+            next: self.head.as_deref_mut(),
+        }
+    }
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|node| {
+            self.next = node.next.as_deref_mut();
+            &mut node.elem
+        })
     }
 }
 
@@ -178,5 +199,33 @@ mod tests {
         for i in list.iter() {
             println!("{} ", i);
         }
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        assert_eq!(iter.next(), Some(&mut 1));
+        assert_eq!(iter.next(), None);
+
+        let mut iter = list.iter_mut();
+        iter.next().map(|v| {
+            *v = 4
+        });
+        iter.next().map(|v| {
+            *v = 5
+        });
+        *iter.next().unwrap() = 6;
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&4));
+        assert_eq!(iter.next(), Some(&5));
+        assert_eq!(iter.next(), Some(&6));
+        assert_eq!(iter.next(), None);
     }
 }
