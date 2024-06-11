@@ -50,7 +50,8 @@ impl<T> List<T> {
     
     pub fn iter(&self) -> Iter<T> {
         Iter {
-            next: self.head.as_ref().map(|node| &**node),
+            // next: self.head.as_ref().map(|node| &**node),
+            next: self.head.as_deref(), // prefer this way
         }
     }
 }
@@ -60,7 +61,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next.map(|node| {
-            self.next = node.next.as_ref().map(|next| &**next);
+            self.next = node.next.as_ref().map::<&Node<T>, _>(|next| &next);
             &node.elem
         })
     }
@@ -164,6 +165,18 @@ mod tests {
         list.push(6);
         for n in list {
             print!("{} ", n);
+        }
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        for i in list.iter() {
+            println!("{} ", i);
         }
     }
 }
