@@ -1,3 +1,4 @@
+#[allow(unused)]
 fn main() {
     #[derive(Debug)]
     struct Person {
@@ -43,6 +44,25 @@ fn main() {
     println!("The student's class is {}", class);
 
     // Error! borrow of partially moved value: `student` partial move occurs
-    println!("The student struct is {:?}", student);
+    // println!("The student struct is {:?}", student);
     println!("The student's id from student struct is {}", student.id);
+
+    let mut bob = Student {
+        id: 123,
+        class: String::from("English"),
+    };
+
+    let bob_ref = &mut bob;
+    // Error! cannot move out of `bob_ref.class` which is behind a mutable reference
+    // let bob_class = bob_ref.class; // move occur here
+    // println!("Bob class: {}", bob_class);
+    // println!("Bob: {:?}", bob_ref);
+
+    #[derive(Debug)]
+    struct OptWrapper(Option<i32>);
+    let mut age_opt = OptWrapper(Some(32));
+    let mut age_opt_ref = &mut age_opt;
+    let age = age_opt_ref.0; // copy occur here
+    println!("age: {:?}", age);
+    println!("age_opt_ref point to: {:?}", age_opt_ref);
 }
