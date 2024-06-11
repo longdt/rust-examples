@@ -33,4 +33,5 @@ members = [
     "tutor_nodb",
     "tutor_db",
     "hello-async",
+    "lists",
 ]
