@@ -1,4 +1,5 @@
 use std::cell::{Ref, RefCell, RefMut};
+use std::marker::PhantomData;
 use std::rc::Rc;
 
 #[derive(Default)]
@@ -117,6 +118,18 @@ impl<T> List<T> {
             .as_ref()
             .map(|head| RefMut::map(head.borrow_mut(), |node| &mut node.elem))
     }
+
+    pub fn iter(&self) -> Iter<T> {
+        Iter(self.head.as_ref().map(|node| unsafe {
+            &*node.as_ptr()
+        }))
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        IterMut(self.head.as_ref().map(|node| unsafe {
+            &mut *node.as_ptr()
+        }))
+    }
 }
 
 impl<T> Drop for List<T> {
@@ -125,6 +138,60 @@ impl<T> Drop for List<T> {
     }
 }
 
+pub struct IntoIter<T>(List<T>);
+
+impl<T> IntoIterator for List<T> {
+    type Item = T;
+    type IntoIter = IntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter(self)
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop_front()
+    }
+}
+
+impl<T> DoubleEndedIterator for IntoIter<T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.pop_back()
+    }
+}
+
+pub struct Iter<'a, T>(Option<&'a Node<T>>);
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.map(|node| {
+            self.0 = node.next.as_ref().map(|next_node| unsafe {
+                &*next_node.as_ptr()
+            });
+            &node.elem
+        })
+    }
+}
+
+pub struct IterMut<'a, T>(Option<&'a mut Node<T>>);
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.take().map(|node| {
+            self.0 = node.next.as_ref().map(|next_node| unsafe {
+                &mut *next_node.as_ptr()
+            });
+            &mut node.elem
+        })
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -191,5 +258,62 @@ mod tests {
         assert_eq!(&*list.peek_front_mut().unwrap(), &mut 3);
         assert_eq!(&*list.peek_back().unwrap(), &1);
         assert_eq!(&*list.peek_back_mut().unwrap(), &mut 1);
+    }
+
+    #[test]
+    fn into_iter() {
+        let mut list = List::new();
+        list.push_front(1);
+        list.push_front(2);
+        list.push_front(3);
+
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next_back(), Some(1));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next_back(), None);
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = List::new();
+        list.push_front(1);
+        list.push_front(2);
+        list.push_front(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        // error[E0502]: cannot borrow `list` as mutable because it is also borrowed as immutable
+        // list.push_front(4);
+        assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), None);
+        list.push_front(5);
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push_front(1);
+        list.push_front(2);
+        list.push_front(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        // error[E0499]: cannot borrow `list` as mutable more than once at a time
+        // list.push_front(4);
+        assert_eq!(iter.next(), Some(&mut 1));
+        assert_eq!(iter.next(), None);
+        list.push_front(5);
+        let mut iter = list.iter_mut();
+        iter.next().map(|v| *v = 10);
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(10));
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(1));
+        assert_eq!(iter.next(), None);
     }
 }
