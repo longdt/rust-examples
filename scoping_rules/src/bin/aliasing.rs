@@ -5,6 +5,14 @@ struct Point {
 }
 
 fn main() {
+    let mut x = 10;
+    let y = &mut x;
+    // Error! cannot assign/use to `x` because it is borrowed
+    // x = 20;
+    // let z = x + 10;
+    // TODO Try ^ uncommenting this line
+    println!("{}", y);
+
     let mut point = Point { x: 0, y: 0, z: 0 };
 
     let borrowed_point = &point;
@@ -41,6 +49,10 @@ fn main() {
 
     // Error! Can't borrow `point` as immutable because it's currently borrowed as mutable.
     // let y = &point.y;
+    // TODO ^ Try uncommenting this line
+
+    // Error! Can't assign to `point.x` because it is borrowed
+    // point.x = 100;
     // TODO ^ Try uncommenting this line
 
     // Error! Can't print because `println!` take immutable reference.
