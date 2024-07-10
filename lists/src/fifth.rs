@@ -27,7 +27,10 @@ impl<T> List<T> {
     }
 
     pub fn push(&mut self, elem: T) {
-        let new_tail = Box::into_raw(Box::new(Node { elem, next: ptr::null_mut() }));
+        let new_tail = Box::into_raw(Box::new(Node {
+            elem,
+            next: ptr::null_mut(),
+        }));
         if !self.tail.is_null() {
             unsafe {
                 (*self.tail).next = new_tail;
@@ -53,19 +56,99 @@ impl<T> List<T> {
             None
         }
     }
+
+    pub fn iter(&self) -> Iter<T> {
+        unsafe {
+            Iter {
+                next: self.head.as_ref(),
+            }
+        }
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        unsafe {
+            IterMut {
+                next: self.head.as_mut(),
+            }
+        }
+    }
+
+    pub fn peek(&self) -> Option<&T> {
+        unsafe {
+            self.head.as_ref().map(|node| {
+                &node.elem
+            })
+        }
+    }
+
+    pub fn peek_mut(&mut self) -> Option<&mut T> {
+        unsafe {
+            self.head.as_mut().map(|node| {
+                &mut node.elem
+            })
+        }
+    }
 }
 
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
-        while let Some(_) = self.pop() {
-        }
+        while let Some(_) = self.pop() {}
+    }
+}
+
+pub struct IntoIter<T>(List<T>);
+
+impl<T> IntoIterator for List<T> {
+    type Item = T;
+    type IntoIter = IntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter(self)
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop()
+    }
+}
+
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
+}
+
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>,
+}
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| unsafe {
+            self.next = node.next.as_ref();
+            &node.elem
+        })
+    }
+}
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|node| unsafe {
+            self.next = node.next.as_mut();
+            &mut node.elem
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::cell::{Cell, UnsafeCell};
     use super::*;
+    use std::cell::{Cell, UnsafeCell};
 
     #[test]
     fn basics() {
@@ -93,6 +176,63 @@ mod tests {
         assert_eq!(list.pop(), Some(6));
         assert_eq!(list.pop(), Some(7));
         assert_eq!(list.pop(), None);
+    }
+
+    #[test]
+    fn into_iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(1));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), None);
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), Some(&2));
+        // error[E0502]: cannot borrow `list` as mutable because it is also borrowed as immutable
+        // list.push_front(4);
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), None);
+        list.push(5);
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 1));
+        assert_eq!(iter.next(), Some(&mut 2));
+        // error[E0499]: cannot borrow `list` as mutable more than once at a time
+        // list.push_front(4);
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), None);
+        list.push(5);
+        let mut iter = list.iter_mut();
+        iter.next().map(|v| *v = 10);
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(10));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), Some(5));
+        assert_eq!(iter.next(), None);
     }
 
     #[test]
@@ -150,7 +290,7 @@ mod tests {
             let mut data = [0; 10];
             let ref1_at_0 = &mut data[0];
             let ptr2_at_0 = ref1_at_0 as *mut i32;
-            let ptr3_at_1 = ptr2_at_0.add(1);   // This wasn't allowed because ptr2_at_0 only manage index 0
+            let ptr3_at_1 = ptr2_at_0.add(1); // This wasn't allowed because ptr2_at_0 only manage index 0
 
             *ptr3_at_1 += 3;
             *ptr2_at_0 += 2;
@@ -244,7 +384,7 @@ mod tests {
             let ptr2_all = slice1_all.as_mut_ptr();
 
             let ptr3_at_0 = ptr2_all;
-            let ptr4_at_1 = ptr2_all.add(1);    // This was allowed because ptr2_all manage index 1
+            let ptr4_at_1 = ptr2_all.add(1); // This was allowed because ptr2_all manage index 1
             let ref5_at_0 = &mut *ptr3_at_0;
             let ref6_at_1 = &mut *ptr4_at_1;
 
@@ -298,7 +438,6 @@ mod tests {
     #[test]
     fn share_references_with_raw_pointer() {
         unsafe {
-
             let mut data = 10;
             let mref1 = &mut data;
             let ptr2 = mref1 as *mut i32;
@@ -370,14 +509,14 @@ mod tests {
     fn unsafe_cell1() {
         unsafe {
             let mut data = UnsafeCell::new(10);
-            let mref1 = &mut data;  // mutable ref to the *outside*
-            let ptr2 = mref1.get();           // get a raw pointer to the insides
-            let sref3 = &*mref1;       // get a shared ref to the *outside*
+            let mref1 = &mut data; // mutable ref to the *outside*
+            let ptr2 = mref1.get(); // get a raw pointer to the insides
+            let sref3 = &*mref1; // get a shared ref to the *outside*
 
-            *ptr2 += 2;                                 // mutable with raw pointer
-            opaque_read(&*sref3.get());                 // read from the shared ref
-            *sref3.get() += 3;                          // write through the shared ref
-            *mref1.get() += 1;                          // mutate with the mutable ref
+            *ptr2 += 2; // mutable with raw pointer
+            opaque_read(&*sref3.get()); // read from the shared ref
+            *sref3.get() += 3; // write through the shared ref
+            *mref1.get() += 1; // mutate with the mutable ref
 
             println!("{}", *data.get());
         }
@@ -429,5 +568,40 @@ mod tests {
             // Should be 21
             println!("{}", data);
         }
+    }
+
+    #[test]
+    fn miri_food() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        assert!(list.pop() == Some(1));
+        list.push(4);
+        assert!(list.pop() == Some(2));
+        list.push(5);
+
+        assert!(list.peek() == Some(&3));
+        list.push(6);
+        list.peek_mut().map(|x| *x *= 10);
+        assert!(list.peek() == Some(&30));
+        assert!(list.pop() == Some(30));
+
+        for elem in list.iter_mut() {
+            *elem *= 100;
+        }
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&400));
+        assert_eq!(iter.next(), Some(&500));
+        assert_eq!(iter.next(), Some(&600));
+        assert_eq!(iter.next(), None);
+        assert_eq!(iter.next(), None);
+
+        assert!(list.pop() == Some(400));
+        list.peek_mut().map(|x| *x *= 10);
+        assert!(list.peek() == Some(&5000));
+        list.push(7);
     }
 }
