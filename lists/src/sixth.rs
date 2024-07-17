@@ -117,27 +117,19 @@ impl<T> LinkedList<T> {
     }
 
     pub fn front(&self) -> Option<&T> {
-        self.front.map(|node| unsafe {
-            &(*node.as_ptr()).elem
-        })
+        self.front.map(|node| unsafe { &(*node.as_ptr()).elem })
     }
 
     pub fn front_mut(&mut self) -> Option<&mut T> {
-        self.front.map(|node| unsafe {
-            &mut (*node.as_ptr()).elem
-        })
+        self.front.map(|node| unsafe { &mut (*node.as_ptr()).elem })
     }
 
     pub fn back(&self) -> Option<&T> {
-        self.back.map(|node| unsafe {
-            &(*node.as_ptr()).elem
-        })
+        self.back.map(|node| unsafe { &(*node.as_ptr()).elem })
     }
 
     pub fn back_mut(&mut self) -> Option<&mut T> {
-        self.back.map(|node| unsafe {
-            &mut (*node.as_ptr()).elem
-        })
+        self.back.map(|node| unsafe { &mut (*node.as_ptr()).elem })
     }
 
     pub fn iter(&self) -> Iter<T> {
@@ -163,8 +155,7 @@ impl<T> LinkedList<T> {
     }
 
     pub fn clear(&mut self) {
-        while let Some(_) = self.pop_front() {
-        }
+        while let Some(_) = self.pop_front() {}
     }
 }
 
@@ -177,9 +168,7 @@ impl<T> IntoIterator for LinkedList<T> {
     type IntoIter = IntoIter<T>;
 
     fn into_iter(self) -> Self::IntoIter {
-        IntoIter {
-            list: self
-        }
+        IntoIter { list: self }
     }
 }
 
@@ -211,7 +200,7 @@ pub struct Iter<'a, T> {
     front: Link<T>,
     back: Link<T>,
     len: usize,
-    _boo: PhantomData<&'a T>
+    _boo: PhantomData<&'a T>,
 }
 
 impl<'a, T> IntoIterator for &'a LinkedList<T> {
@@ -267,7 +256,7 @@ pub struct IterMut<'a, T> {
     front: Link<T>,
     back: Link<T>,
     len: usize,
-    _boo: PhantomData<&'a mut T>
+    _boo: PhantomData<&'a mut T>,
 }
 
 impl<'a, T> IntoIterator for &'a mut LinkedList<T> {
@@ -336,7 +325,7 @@ impl<T: Clone> Clone for LinkedList<T> {
 }
 
 impl<T> Extend<T> for LinkedList<T> {
-    fn extend<I: IntoIterator<Item=T>>(&mut self, iter: I) {
+    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         for item in iter {
             self.push_back(item)
         }
@@ -344,7 +333,7 @@ impl<T> Extend<T> for LinkedList<T> {
 }
 
 impl<T> FromIterator<T> for LinkedList<T> {
-    fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut list = Self::new();
         list.extend(iter);
         list
@@ -367,8 +356,7 @@ impl<T: PartialEq> PartialEq for LinkedList<T> {
     }
 }
 
-impl<T: Eq> Eq for LinkedList<T> {
-}
+impl<T: Eq> Eq for LinkedList<T> {}
 
 impl<T: PartialOrd> PartialOrd for LinkedList<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -391,10 +379,56 @@ impl<T: Hash> Hash for LinkedList<T> {
     }
 }
 
+unsafe impl<T: Send> Send for LinkedList<T> {}
+unsafe impl<T: Sync> Sync for LinkedList<T> {}
+unsafe impl<'a, T: Send> Send for Iter<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for Iter<'a, T> {}
+unsafe impl<'a, T: Send> Send for IterMut<'a, T> {}
+unsafe impl<'a, T: Sync> Sync for IterMut<'a, T> {}
+
+#[allow(dead_code)]
+fn assert_properties() {
+    fn is_send<T: Send>() {}
+    fn is_sync<T: Sync>() {}
+
+    is_send::<LinkedList<i32>>();
+    is_sync::<LinkedList<i32>>();
+
+    is_send::<IntoIter<i32>>();
+    is_sync::<IntoIter<i32>>();
+
+    is_send::<Iter<i32>>();
+    is_sync::<Iter<i32>>();
+
+    is_send::<IterMut<i32>>();
+    is_sync::<IterMut<i32>>();
+
+    fn linked_list_covariant<'a, T>(x: LinkedList<&'static T>) -> LinkedList<&'a T> {
+        x
+    }
+
+    fn iter_covariant<'i, 'a, T>(x: Iter<'i, &'static T>) -> Iter<'i, &'a T> {
+        x
+    }
+
+    fn into_iter_covariant<'a, T>(x: IntoIter<&'static T>) -> IntoIter<&'a T> {
+        x
+    }
+
+    /// ```compile_fail
+    /// use crate::lists::sixth::IterMut;
+    ///
+    /// fn iter_mut_covariant<'i, 'a, T>(x: IterMut<'i, &'static T>) -> IterMut<'i, &'a T> {
+    ///     x
+    /// }
+    /// ```
+    fn iter_mut_invariant() {}
+}
+
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
     use super::*;
+    use std::collections::HashMap;
 
     #[test]
     fn basics() {
@@ -703,7 +737,8 @@ mod tests {
         assert_eq!(format!("{:?}", list), "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]");
 
         let list: LinkedList<&str> = vec!["just", "one", "test", "more"]
-            .iter().copied()
+            .iter()
+            .copied()
             .collect();
         assert_eq!(format!("{:?}", list), r#"["just", "one", "test", "more"]"#);
     }
@@ -727,4 +762,3 @@ mod tests {
         assert!(map.is_empty());
     }
 }
-
