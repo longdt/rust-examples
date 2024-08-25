@@ -1,5 +1,4 @@
 ---
-version: '3'
 services:
   opensearch-node1:
     image: opensearchproject/opensearch:latest
@@ -59,7 +58,18 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]'
     networks:
       - opensearch-net
-
+  data-prepper:
+    image: opensearchproject/data-prepper:latest
+    container_name: data-prepper
+    ports:
+      - 21890:21890
+    expose:
+      - '21890'
+    volumes:
+      - ./pipelines.yml:/usr/share/data-prepper/pipelines/pipelines.yaml
+      - ./data-prepper-config.yml:/usr/share/data-prepper/config/data-prepper-config.yaml
+    networks:
+      - opensearch-net
 volumes:
   opensearch-data1:
   opensearch-data2:
