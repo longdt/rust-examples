@@ -1,0 +1,17 @@
+otel-logs-pipeline:
+  workers: 5
+  delay: 10
+  source:
+    otel_logs_source:
+      ssl: false
+  buffer:
+    bounded_blocking:
+  sink:
+    - opensearch:
+        hosts: ["https://opensearch-node1:9200","https://opensearch-node2:9200"]
+        username: "admin"
+        password: "0pen@Search"
+        insecure: true
+        index_type: custom
+        index: otel-events-%{yyyy.MM.dd}
+        bulk_size: 4

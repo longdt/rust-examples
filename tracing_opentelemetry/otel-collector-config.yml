@@ -5,8 +5,18 @@ receivers:
         endpoint: 0.0.0.0:55680
 
 exporters:
-  otlp/2:
+  otlp/traces:
     endpoint: data-prepper:21890
+    tls:
+      insecure: true
+      insecure_skip_verify: true
+  otlp/metrics:
+    endpoint: data-prepper:21891
+    tls:
+      insecure: true
+      insecure_skip_verify: true
+  otlp/logs:
+    endpoint: data-prepper:21892
     tls:
       insecure: true
       insecure_skip_verify: true
@@ -16,4 +26,10 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging, otlp/2]
+      exporters: [logging, otlp/traces]
+    metrics:
+      receivers: [otlp]
+      exporters: [logging, otlp/metrics]
+    logs:
+      receivers: [otlp]
+      exporters: [logging, otlp/logs]
