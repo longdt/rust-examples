@@ -70,6 +70,19 @@ services:
       - ./data-prepper-config.yml:/usr/share/data-prepper/config/data-prepper-config.yaml
     networks:
       - opensearch-net
+  # otel-collector need deploy as sidecar of deployment service
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    ports:
+      - 55680:55680
+    expose:
+      - '55680'
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    command: ["--config=/etc/otel-collector-config.yml"]
+    networks:
+      - opensearch-net
 volumes:
   opensearch-data1:
   opensearch-data2:

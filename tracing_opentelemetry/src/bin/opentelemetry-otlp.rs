@@ -1,4 +1,5 @@
 use opentelemetry::{global, trace::TracerProvider, Key, KeyValue};
+use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::{
     metrics::{
         reader::{DefaultAggregationSelector, DefaultTemporalitySelector},
@@ -32,6 +33,7 @@ fn resource() -> Resource {
 fn init_meter_provider() -> SdkMeterProvider {
     let exporter = opentelemetry_otlp::new_exporter()
         .tonic()
+        .with_endpoint("http://localhost:55680")
         .build_metrics_exporter(
             Box::new(DefaultAggregationSelector::new()),
             Box::new(DefaultTemporalitySelector::new()),
@@ -106,7 +108,7 @@ fn init_tracer() -> Tracer {
                 .with_resource(resource()),
         )
         .with_batch_config(BatchConfig::default())
-        .with_exporter(opentelemetry_otlp::new_exporter().tonic())
+        .with_exporter(opentelemetry_otlp::new_exporter().tonic().with_endpoint("http://localhost:55680"))
         .install_batch(runtime::Tokio)
         .unwrap();
 
