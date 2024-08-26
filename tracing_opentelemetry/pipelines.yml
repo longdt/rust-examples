@@ -13,7 +13,7 @@ raw-pipeline:
     pipeline:
       name: "entry-pipeline"
   processor:
-    - otel_trace_raw:
+    - otel_traces:
   sink:
     - opensearch:
         hosts: ["https://opensearch-node1:9200","https://opensearch-node2:9200"]
@@ -28,7 +28,7 @@ service-map-pipeline:
     pipeline:
       name: "entry-pipeline"
   processor:
-    - service_map_stateful:
+    - service_map:
   sink:
     - opensearch:
         hosts: ["https://opensearch-node1:9200","https://opensearch-node2:9200"]
