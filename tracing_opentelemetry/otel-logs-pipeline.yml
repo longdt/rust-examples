@@ -13,5 +13,5 @@ otel-logs-pipeline:
         password: "0pen@Search"
         insecure: true
         index_type: custom
-        index: otel-events-%{yyyy.MM.dd}
+        index: ss4o_logs-%{yyyy.MM.dd}
         bulk_size: 4
