@@ -161,6 +161,11 @@ async fn foo() {
         key_2 = 10,
         "handle foo",
     );
-
+    bar(101).await;
     tracing::info!(histogram.baz = 10, "histogram example",);
+}
+
+#[tracing::instrument]
+async fn bar(_game_id: u32) {
+    tracing::error!(retry = 1, user = "longdt", "Please retry manually");
 }

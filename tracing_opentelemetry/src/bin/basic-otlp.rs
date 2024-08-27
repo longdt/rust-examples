@@ -108,6 +108,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
 
     tracing_subscriber::registry()
         .with(filter)
+        .with(tracing_subscriber::fmt::layer())
         .with(layer)
         .init();
 
@@ -150,10 +151,22 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
     });
 
     info!(name: "my-event", target: "my-target", "hello from {}. My price is {}", "apple", 1.99);
-
+    inst_foo().await;
     global::shutdown_tracer_provider();
     meter_provider.shutdown()?;
     logger_provider.shutdown()?;
 
     Ok(())
+}
+
+#[tracing::instrument]
+async fn inst_foo() {
+    tracing::info!(
+        monotonic_counter.foo = 1_u64,
+        key_1 = "bar",
+        key_2 = 10,
+        "handle inst_foo",
+    );
+
+    tracing::info!(histogram.baz = 10, "inst_foo histogram example",);
 }
