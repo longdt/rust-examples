@@ -35,4 +35,5 @@ members = [
     "hello-async",
     "lists",
     "tracing_opentelemetry",
+    "derive_from",
 ]
